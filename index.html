@@ -9,148 +9,162 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 20px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+        
         .active-tab { background-color: #f59e0b !important; color: white !important; box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.3); }
-        .sidebar-item { transition: all 0.3s ease; cursor: pointer; }
-        .chart-tile { background: white; border-radius: 1.5rem; border: 1px solid #e2e8f0; padding: 1.5rem; transition: all 0.3s ease; height: 100%; display: flex; flex-direction: column; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .chart-tile:hover { border-color: #f59e0b; box-shadow: 0 12px 30px -10px rgba(0,0,0,0.08); }
-        input[type=range] { -webkit-appearance: none; background: transparent; cursor: pointer; }
-        input[type=range]::-webkit-slider-runnable-track { background: #f1f5f9; border-radius: 10px; height: 8px; border: 1px solid #e2e8f0; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: #f59e0b; margin-top: -9px; border: 3px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .metric-value { font-feature-settings: "tnum"; }
+        .sidebar-item { transition: all 0.2s ease; cursor: pointer; display: flex; align-items: center; gap: 1rem; padding: 1rem 1.5rem; border-radius: 0.75rem; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; }
+        .sidebar-item:hover { background-color: #f8fafc; color: #f59e0b; }
+        
+        .chart-tile { background: white; border-radius: 1rem; border: 1px solid #e2e8f0; padding: 1.5rem; transition: all 0.3s ease; height: 100%; display: flex; flex-direction: column; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); overflow: hidden; }
+        .chart-tile:hover { border-color: #f59e0b; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
+        
+        input[type=range] { -webkit-appearance: none; background: transparent; cursor: pointer; width: 100%; }
+        input[type=range]::-webkit-slider-runnable-track { background: #e2e8f0; border-radius: 10px; height: 6px; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: #f59e0b; margin-top: -7px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        
+        .grid-layout { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 1.5rem; }
+        .span-4 { grid-column: span 4 / span 4; }
+        .span-6 { grid-column: span 6 / span 6; }
+        .span-8 { grid-column: span 8 / span 8; }
+        .span-12 { grid-column: span 12 / span 12; }
+
+        @media (max-width: 1280px) {
+            .span-4 { grid-column: span 6 / span 6; }
+            .span-8 { grid-column: span 12 / span 12; }
+        }
+        @media (max-width: 768px) {
+            .span-4, .span-6, .span-8 { grid-column: span 12 / span 12; }
+        }
     </style>
 </head>
-<body class="text-slate-800 selection:bg-orange-100">
+<body class="antialiased">
 
     <div class="flex h-screen overflow-hidden">
         <!-- SIDEBAR -->
-        <aside class="w-80 bg-white border-r border-slate-200 flex flex-col shrink-0 z-50">
+        <aside class="w-72 bg-white border-r border-slate-200 flex flex-col shrink-0 z-50 shadow-sm">
             <div class="p-8">
-                <div class="flex items-center gap-4 mb-16">
-                    <div class="w-12 h-12 bg-orange-500 rounded-2xl flex items-center justify-center text-white shadow-2xl shadow-orange-500/30">
-                        <i data-lucide="layers"></i>
+                <div class="flex items-center gap-4 mb-12">
+                    <div class="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-orange-500/30">
+                        <i data-lucide="bar-chart-3"></i>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-black leading-none uppercase tracking-tighter">Nexus</h1>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Board Meeting Analytics</p>
+                        <h1 class="text-2xl font-black leading-none uppercase tracking-tighter text-slate-800">Nexus</h1>
+                        <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1 italic">Simulation Analytics</p>
                     </div>
                 </div>
 
-                <nav class="space-y-3">
-                    <div onclick="switchTab('overview')" id="btn-overview" class="sidebar-item w-full flex items-center gap-5 px-6 py-4 rounded-xl font-black text-xs uppercase tracking-widest text-slate-400 hover:bg-slate-50 hover:text-orange-500">
-                        <i data-lucide="layout-dashboard"></i> Report Home
+                <nav class="space-y-2">
+                    <div onclick="switchTab('overview')" id="btn-overview" class="sidebar-item active-tab">
+                        <i data-lucide="layout-dashboard" size="18"></i> Executive Deck
                     </div>
-                    <div onclick="switchTab('purchasing')" id="btn-purchasing" class="sidebar-item w-full flex items-center gap-5 px-6 py-4 rounded-xl font-black text-xs uppercase tracking-widest text-slate-400 hover:bg-slate-50 hover:text-orange-500">
-                        <i data-lucide="truck"></i> Purchasing Audit
+                    <div onclick="switchTab('purchasing')" id="btn-purchasing" class="sidebar-item">
+                        <i data-lucide="shopping-bag" size="18"></i> Purchasing
                     </div>
-                    <div onclick="switchTab('sales')" id="btn-sales" class="sidebar-item w-full flex items-center gap-5 px-6 py-4 rounded-xl font-black text-xs uppercase tracking-widest text-slate-400 hover:bg-slate-50 hover:text-orange-500">
-                        <i data-lucide="shopping-cart"></i> Sales Strategy
+                    <div onclick="switchTab('sales')" id="btn-sales" class="sidebar-item">
+                        <i data-lucide="trending-up" size="18"></i> Sales Unit
                     </div>
-                    <div onclick="switchTab('scm')" id="btn-scm" class="sidebar-item w-full flex items-center gap-5 px-6 py-4 rounded-xl font-black text-xs uppercase tracking-widest text-slate-400 hover:bg-slate-50 hover:text-orange-500">
-                        <i data-lucide="zap"></i> SCM Synchronization
+                    <div onclick="switchTab('scm')" id="btn-scm" class="sidebar-item">
+                        <i data-lucide="truck" size="18"></i> SCM Synchronization
                     </div>
-                    <div onclick="switchTab('ops')" id="btn-ops" class="sidebar-item w-full flex items-center gap-5 px-6 py-4 rounded-xl font-black text-xs uppercase tracking-widest text-slate-400 hover:bg-slate-50 hover:text-orange-500">
-                        <i data-lucide="factory"></i> Operations Hub
+                    <div onclick="switchTab('ops')" id="btn-ops" class="sidebar-item">
+                        <i data-lucide="factory" size="18"></i> Operations
                     </div>
-                    <div onclick="switchTab('lab')" id="btn-lab" class="sidebar-item w-full flex items-center gap-5 px-6 py-4 rounded-xl font-black text-xs uppercase tracking-widest text-slate-400 hover:bg-slate-50 hover:text-orange-500">
-                        <i data-lucide="sliders"></i> Strategic Lab
+                    <div onclick="switchTab('lab')" id="btn-lab" class="sidebar-item">
+                        <i data-lucide="flask-conical" size="18"></i> Scenario Lab
                     </div>
                 </nav>
             </div>
-            <div class="mt-auto p-12">
-                <div class="bg-slate-50 p-6 rounded-[2rem] border border-slate-100 shadow-inner">
-                    <div class="flex items-center gap-3 mb-4">
-                        <i data-lucide="shield-check" size="18" class="text-orange-500"></i>
-                        <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Board Verified</span>
-                    </div>
-                    <p class="text-[12px] font-mono text-slate-800 font-black uppercase">R6_SYNC_FINAL</p>
+            <div class="mt-auto p-8 border-t border-slate-50 bg-slate-50/50">
+                <div class="flex items-center gap-3 mb-3 text-orange-600">
+                    <i data-lucide="verified" size="16"></i>
+                    <span class="text-[10px] font-black uppercase tracking-widest">R6 Sync Verified</span>
                 </div>
+                <p class="text-[11px] font-mono text-slate-500">Board Meeting Dec-2025</p>
             </div>
         </aside>
 
-        <!-- MAIN CONTENT -->
-        <main class="flex-1 overflow-y-auto p-12 lg:p-16 custom-scrollbar relative bg-[#f8fafc]">
-            <header class="flex justify-between items-center mb-16 border-b border-slate-200 pb-12">
+        <!-- MAIN VIEWPORT -->
+        <main class="flex-1 overflow-y-auto p-12 custom-scrollbar bg-[#f8fafc]">
+            <header class="flex justify-between items-center mb-12 border-b border-slate-200 pb-8">
                 <div>
-                    <h1 class="text-6xl font-black text-slate-800 tracking-tighter uppercase leading-[0.8]">Strategic <br/><span class="text-orange-500">Board Deck</span></h1>
-                    <div class="flex items-center gap-8 mt-8">
-                        <span class="text-xs font-black text-slate-400 uppercase tracking-[0.5em]">Presentation: 18.12.2025</span>
-                        <div class="w-12 h-px bg-slate-300"></div>
-                        <span class="text-xs font-black text-orange-600 uppercase tracking-widest flex items-center gap-3"><i data-lucide="target" size="18"></i> Operational Sync: 100%</span>
-                    </div>
+                    <h2 class="text-xs font-black text-orange-500 uppercase tracking-[0.4em] mb-2">Portfolio Management</h2>
+                    <h1 class="text-5xl font-black text-slate-900 tracking-tighter uppercase leading-none">Fresh Connection <span class="text-orange-500">Board Deck</span></h1>
                 </div>
-                <div class="w-20 h-20 bg-slate-800 rounded-[2.5rem] flex items-center justify-center text-white shadow-2xl">
-                    <i data-lucide="cpu" size="40"></i>
+                <div class="flex items-center gap-6">
+                    <div class="text-right">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Global Status</p>
+                        <p class="text-lg font-black text-emerald-600">ROI +4.54%</p>
+                    </div>
+                    <div class="w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-slate-200">
+                        <i data-lucide="award" size="32"></i>
+                    </div>
                 </div>
             </header>
 
-            <!-- TAB CONTENT CONTAINERS -->
-            <div id="content-area" class="space-y-12 pb-24">
-                <!-- Content will be injected here by JS -->
+            <div id="content-area" class="space-y-12">
+                <!-- Data will be rendered here -->
             </div>
 
-            <footer class="mt-40 pt-16 border-t border-slate-200 flex justify-between items-center opacity-60 text-[10px] font-black uppercase tracking-[0.3em] font-mono">
-                <div class="flex items-center gap-12 text-slate-400">
-                    <span class="flex items-center gap-3"><i data-lucide="target" size="16"></i> Global_Network_Sync</span>
-                    <span class="flex items-center gap-3"><i data-lucide="file-text" size="16"></i> Audit_Verified_R6</span>
-                </div>
-                <span class="text-slate-500">Nexus Pro Intelligence © 2025 Board Disclosure</span>
+            <footer class="mt-24 pt-10 border-t border-slate-200 flex justify-between items-center opacity-50 text-[10px] font-black uppercase tracking-[0.2em]">
+                <span>Strategy Presentation Release: 18.12.2025</span>
+                <span>Nexus Analytics Pro v6.4.2</span>
             </footer>
         </main>
     </div>
 
     <script>
-        // --- DATASET: INTEGRATED FROM BOOK1 & FINANCE REPORTS ---
+        // --- DATASET: ROUNDS -2 TO 6 ---
         const simData = [
-            { round: -2, roi: -6.67, revenue: 2628, cogs: 1.85, indirect: 120.1, rel: 83.8, rej: 5.79, sl: 93.7, shelf: 85.0, error: 49.5, inUtil: 95.4, outUtil: 88.0, adherence: 82.6, lostRev: 180, stock: 4.2, rmCost: 46.2, downtime: 15.2, prodAvail: 92.1 },
-            { round: -1, roi: -7.68, revenue: 2628, cogs: 1.85, indirect: 120.5, rel: 84.1, rej: 5.89, sl: 94.8, shelf: 85.9, error: 48.9, inUtil: 93.3, outUtil: 85.0, adherence: 82.9, lostRev: 185, stock: 4.3, rmCost: 46.5, downtime: 15.5, prodAvail: 93.2 },
-            { round: 0,  roi: -7.68, revenue: 2628, cogs: 1.85, indirect: 120.5, rel: 84.1, rej: 5.89, sl: 94.8, shelf: 85.9, error: 48.9, inUtil: 93.3, outUtil: 85.0, adherence: 82.9, lostRev: 185, stock: 4.3, rmCost: 46.5, downtime: 15.5, prodAvail: 93.2 },
-            { round: 1,  roi: -5.72, revenue: 2559, cogs: 1.82, indirect: 122.3, rel: 74.0, rej: 5.79, sl: 94.9, shelf: 85.9, error: 45.8, inUtil: 80.5, outUtil: 82.0, adherence: 81.7, lostRev: 210, stock: 4.8, rmCost: 45.8, downtime: 16.8, prodAvail: 94.1 },
-            { round: 2,  roi: -0.59, revenue: 2616, cogs: 1.78, indirect: 125.1, rel: 79.4, rej: 6.48, sl: 95.5, shelf: 88.6, error: 38.6, inUtil: 89.4, outUtil: 88.0, adherence: 83.2, lostRev: 140, stock: 4.0, rmCost: 44.2, downtime: 14.1, prodAvail: 95.5 },
-            { round: 3,  roi: 2.15,  revenue: 2582, cogs: 1.75, indirect: 130.4, rel: 92.3, rej: 5.83, sl: 97.1, shelf: 83.7, error: 35.1, inUtil: 60.5, outUtil: 75.0, adherence: 85.6, lostRev: 95, stock: 3.5, rmCost: 43.1, downtime: 12.2, prodAvail: 94.8 },
-            { round: 4,  roi: 1.68,  revenue: 2671, cogs: 1.72, indirect: 145.2, rel: 93.2, rej: 5.05, sl: 95.2, shelf: 88.3, error: 30.4, inUtil: 116.6, outUtil: 80.0, adherence: 88.3, lostRev: 80, stock: 3.2, rmCost: 42.5, downtime: 10.5, prodAvail: 96.2 },
-            { round: 5,  roi: 2.44,  revenue: 2680, cogs: 1.70, indirect: 148.1, rel: 93.5, rej: 5.04, sl: 97.9, shelf: 87.2, error: 28.7, inUtil: 83.7, outUtil: 85.0, adherence: 91.4, lostRev: 45, stock: 3.0, rmCost: 41.8, downtime: 9.1, prodAvail: 97.5 },
-            { round: 6,  roi: 4.54,  revenue: 2656, cogs: 1.68, indirect: 150.3, rel: 94.1, rej: 3.71, sl: 98.2, shelf: 86.8, error: 22.1, inUtil: 89.8, outUtil: 90.2, adherence: 93.6, lostRev: 25, stock: 2.8, rmCost: 40.2, downtime: 7.8, prodAvail: 98.2 },
+            { round: -2, roi: -6.67, revenue: 2.62, cogs: 1.85, indirect: 120.1, rel: 83.8, rej: 5.79, sl: 93.7, shelf: 85.0, error: 49.5, inUtil: 95.4, outUtil: 88.0, adherence: 82.6, lostRev: 180, rmCost: 46.2, downtime: 15.2, prodAvail: 92.1, obsolete: 5.0 },
+            { round: -1, roi: -7.68, revenue: 2.62, cogs: 1.85, indirect: 120.5, rel: 84.1, rej: 5.89, sl: 94.8, shelf: 85.9, error: 48.9, inUtil: 93.3, outUtil: 85.0, adherence: 82.9, lostRev: 185, rmCost: 46.5, downtime: 15.5, prodAvail: 93.2, obsolete: 5.2 },
+            { round: 0,  roi: -7.68, revenue: 2.62, cogs: 1.85, indirect: 120.5, rel: 84.1, rej: 5.89, sl: 94.8, shelf: 85.9, error: 48.9, inUtil: 93.3, outUtil: 85.0, adherence: 82.9, lostRev: 185, rmCost: 46.5, downtime: 15.5, prodAvail: 93.2, obsolete: 5.2 },
+            { round: 1,  roi: -5.72, revenue: 2.55, cogs: 1.82, indirect: 122.3, rel: 74.0, rej: 5.79, sl: 94.9, shelf: 85.9, error: 45.8, inUtil: 80.5, outUtil: 82.0, adherence: 81.7, lostRev: 210, rmCost: 45.8, downtime: 16.8, prodAvail: 94.1, obsolete: 6.8 },
+            { round: 2,  roi: -0.59, revenue: 2.61, cogs: 1.78, indirect: 125.1, rel: 79.4, rej: 6.48, sl: 95.5, shelf: 88.6, error: 38.6, inUtil: 89.4, outUtil: 88.0, adherence: 83.2, lostRev: 140, rmCost: 44.2, downtime: 14.1, prodAvail: 95.5, obsolete: 4.5 },
+            { round: 3,  roi: 2.15,  revenue: 2.58, cogs: 1.75, indirect: 130.4, rel: 92.3, rej: 5.83, sl: 97.1, shelf: 83.7, error: 35.1, inUtil: 60.5, outUtil: 75.0, adherence: 85.6, lostRev: 95, rmCost: 43.1, downtime: 12.2, prodAvail: 94.8, obsolete: 3.1 },
+            { round: 4,  roi: 1.68,  revenue: 2.67, cogs: 1.72, indirect: 145.2, rel: 93.2, rej: 5.05, sl: 95.2, shelf: 88.3, error: 30.4, inUtil: 116.6, outUtil: 80.0, adherence: 88.3, lostRev: 80, rmCost: 42.5, downtime: 10.5, prodAvail: 96.2, obsolete: 2.5 },
+            { round: 5,  roi: 2.44,  revenue: 2.68, cogs: 1.70, indirect: 148.1, rel: 93.5, rej: 5.04, sl: 97.9, shelf: 87.2, error: 28.7, inUtil: 83.7, outUtil: 85.0, adherence: 91.4, lostRev: 45, rmCost: 41.8, downtime: 9.1, prodAvail: 97.5, obsolete: 2.0 },
+            { round: 6,  roi: 4.54,  revenue: 2.65, cogs: 1.68, indirect: 150.3, rel: 94.1, rej: 3.71, sl: 98.2, shelf: 86.8, error: 22.1, inUtil: 89.8, outUtil: 90.2, adherence: 93.6, lostRev: 25, rmCost: 40.2, downtime: 7.8, prodAvail: 98.2, obsolete: 1.5 },
         ];
 
-        const chartColors = ['#f59e0b', '#1e293b', '#ef4444', '#10b981'];
+        const chartColors = ['#f59e0b', '#1e293b', '#ef4444', '#10b981', '#fbbf24'];
 
         const commonOptions = {
-            chart: { toolbar: { show: false }, zoom: { enabled: false }, fontFamily: 'Inter', background: 'transparent' },
-            stroke: { curve: 'smooth', width: 4 },
-            grid: { borderColor: '#f1f5f9', padding: { left: 10, right: 10 } },
+            chart: { toolbar: { show: false }, zoom: { enabled: false }, fontFamily: 'Inter' },
+            stroke: { curve: 'smooth', width: 3 },
+            grid: { borderColor: '#f1f5f9' },
             colors: chartColors,
             dataLabels: { enabled: false },
-            markers: { size: 4, strokeWidth: 2, strokeColors: '#fff', hover: { size: 7 } },
-            legend: { position: 'top', horizontalAlign: 'right', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase' }
+            markers: { size: 4, strokeWidth: 2, strokeColors: '#fff', hover: { size: 6 } },
+            legend: { position: 'top', horizontalAlign: 'right', fontSize: '10px', fontWeight: 700 }
         };
 
         function switchTab(tabId) {
             document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active-tab'));
-            document.getElementById(`btn-${tabId}`).classList.add('active-tab');
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            if (activeBtn) activeBtn.classList.add('active-tab');
 
             const container = document.getElementById('content-area');
             container.innerHTML = '';
 
             if (tabId === 'overview') {
                 container.innerHTML = `
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                        ${renderKPITile('ROI Milestone', '4.54%', '+11.2%', 'trending-up')}
-                        ${renderKPITile('Realized Revenue', '€2.65M', '+1.1%', 'dollar-sign')}
-                        ${renderKPITile('COGS Index', '0.88', '-12.0%', 'target')}
-                        ${renderKPITile('Plan Adherence', '93.6%', '+13.4%', 'zap')}
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        ${renderKPITile('ROI Achievement', '4.54%', '+11.2%', 'trending-up', 'emerald')}
+                        ${renderKPITile('Net Revenue', '€2.65M', '+1.1%', 'dollar-sign', 'emerald')}
+                        ${renderKPITile('COGS Index', '0.88', '-12.0%', 'target', 'rose')}
+                        ${renderKPITile('Plan Adherence', '93.6%', '+13.4%', 'zap', 'emerald')}
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div class="lg:col-span-2 chart-tile p-12 relative overflow-hidden border-l-8 border-l-orange-500">
-                            <i data-lucide="globe" style="width: 300px; height: 300px;" class="absolute top-0 right-0 opacity-[0.03] text-orange-500"></i>
                             <h3 class="text-xs font-black text-orange-600 uppercase tracking-widest mb-6">Simulation Vision</h3>
-                            <h2 class="text-6xl font-black text-slate-800 leading-tight mb-8">SYNC <br/><span class="text-orange-500 italic uppercase">Excellence</span></h2>
-                            <p class="text-2xl text-slate-600 leading-relaxed italic font-serif">
-                                "Eliminating operational friction to capture premium contract index bonuses through engineered 98%+ service reliability."
+                            <h2 class="text-7xl font-black text-slate-800 leading-tight mb-8">SYNC <br/><span class="text-orange-500 italic uppercase">Excellence</span></h2>
+                            <p class="text-2xl text-slate-500 leading-relaxed italic font-serif">
+                                "Eliminating operational friction to capture premium contract bonuses through engineered 98%+ service reliability."
                             </p>
                         </div>
                         <div class="bg-slate-900 p-12 rounded-[2.5rem] flex flex-col justify-between text-white shadow-2xl">
@@ -160,127 +174,144 @@
                            </div>
                            <div class="space-y-6 pt-8 border-t border-white/10">
                               <div class="flex justify-between text-xs font-bold uppercase tracking-widest"><span>Service Peak</span><span class="text-emerald-400">98.2%</span></div>
-                              <div class="flex justify-between text-xs font-bold uppercase tracking-widest"><span>Plan Adherence</span><span class="text-emerald-400">93.6%</span></div>
-                              <div class="h-1 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-orange-500 w-[94%]"></div></div>
+                              <div class="flex justify-between text-xs font-bold uppercase tracking-widest"><span>Internal Stability</span><span class="text-emerald-400">93.6%</span></div>
+                              <div class="h-1 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-orange-500 w-[94%] shadow-[0_0_20px_rgba(249,115,22,0.6)]"></div></div>
                            </div>
                         </div>
                     </div>
 
-                    <div class="chart-tile min-h-[450px]">
-                        <h4 class="text-slate-400 text-[10px] font-black uppercase mb-8 tracking-[0.2em] border-l-2 border-orange-500 pl-4">Financial Lifecycle: ROI vs Revenue Vector</h4>
-                        <div id="chart-main-roi" class="h-[350px]"></div>
+                    <div class="chart-tile" style="height: 500px;">
+                        <h4 class="text-slate-400 text-[10px] font-black uppercase mb-8 tracking-[0.2em] border-l-2 border-orange-500 pl-4">ROI Portfolio Lifecycle (R-2 to R6)</h4>
+                        <div id="chart-main" class="flex-1"></div>
                         <div class="mt-4 p-4 bg-orange-50 border-l-4 border-orange-500 rounded-r-xl">
-                            <p class="text-[11px] text-orange-900 font-semibold italic">The pivot in Round 2 marks our transition to positive ROI as structural COGS reduction outpaced revenue volatility.</p>
+                            <p class="text-[11px] text-orange-900 font-semibold italic">Financial Audit: The structural reduction in COGS from R2 onwards allowed service reliability to translate into positive net margins.</p>
                         </div>
                     </div>
                 `;
-                new ApexCharts(document.querySelector("#chart-main-roi"), {
+                new ApexCharts(document.querySelector("#chart-main"), {
                     ...commonOptions,
-                    chart: { ...commonOptions.chart, height: 350 },
+                    chart: { height: 350, type: 'area' },
                     series: [
                         { name: 'ROI %', type: 'area', data: simData.map(d => d.roi) },
-                        { name: 'Revenue (M€)', type: 'line', data: simData.map(d => d.revenue) }
+                        { name: 'Revenue', type: 'line', data: simData.map(d => d.revenue) }
                     ],
-                    xaxis: { categories: simData.map(d => "R" + d.round) },
+                    xaxis: { categories: simData.map(d => "Round " + d.round) },
                     yaxis: [{ title: { text: 'ROI %' } }, { opposite: true, title: { text: 'Revenue' } }]
                 }).render();
 
             } else if (tabId === 'purchasing') {
                 container.innerHTML = `
-                    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-                        ${renderChartTile('1. Reliability vs ROI (Regression)', 'p1', 'Book1 Linkage: 10% gain in reliability = +2% ROI. Linear correlation (0.87) proves consistency drives uptime.')}
-                        ${renderChartTile('2. Rejection Rate vs COGS Inflator', 'p2', 'Audit: Each 1% rejection adds €15k to COGS. reduction to 3.71% recovered €42k in material replacement.')}
-                        ${renderChartTile('3. Obsolete % vs Indirect Cost', 'p3', 'Efficiency: Each 1% obsoletes = +$8K indirect cost. Managing RM inventory lowered warehouse overhead by 8%.')}
-                        ${renderChartTile('4. RM Cost Index Timeline', 'p4', 'Procurement Logic: structural reduction in material index from 46.5 to 40.2 achieved via tiered volume contracts.')}
-                        ${renderChartTile('5. Component Revenue Impact Share', 'p5', 'PET Bottles represent 48% of volume risk. Stockout protection here is the top mandate.')}
-                        <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm h-full flex flex-col">
-                            <h4 class="text-slate-800 text-[11px] font-black uppercase mb-6 tracking-widest flex items-center gap-2 border-b pb-4"><i data-lucide="clipboard-list"></i> 6. Supplier Performance</h4>
-                            <table class="w-full text-left text-[11px] mt-4">
-                                <tr class="text-slate-400 font-black border-b"><th>Vendor</th><th>ROI Impact</th><th>Status</th></tr>
-                                <tr class="border-b"><td class="py-4 font-bold">Arancia</td><td class="text-emerald-600">+2.45%</td><td>Preferred</td></tr>
-                                <tr class="border-b"><td class="py-4 font-bold">Trio PET</td><td class="text-emerald-600">+1.33%</td><td>Benchmark</td></tr>
-                                <tr><td class="py-4 font-bold text-rose-600">Miami</td><td class="text-rose-600">-0.88%</td><td>Terminate</td></tr>
-                            </table>
-                        </div>
+                    <div class="grid-layout">
+                        <div class="span-4">${renderChartTile('1. Reliability vs ROI (Regression)', 'p1', 'Book1: 10% gain in reliability yields +2% ROI. linear correlation (0.87) proves consistency drives profit.')}</div>
+                        <div class="span-4">${renderChartTile('2. Rejection vs COGS Inflator', 'p2', 'Audit: Each 1% rejection adds €15k to COGS. reduction to 3.71% recovered €42k in material replacement.')}</div>
+                        <div class="span-4">${renderChartTile('3. Obsolete vs Indirect Costs', 'p3', 'Efficiency: Each 1% obsoletes = +$8K cost. Managed RM cycles lowered warehouse overhead by 8%.')}</div>
+                        <div class="span-4">${renderChartTile('4. RM Cost % Index Timeline', 'p4', 'Procurement: Structural reduction in material index from 46.5 to 40.2 achieved through tiered contracts.')}</div>
+                        <div class="span-4">${renderChartTile('5. Component Revenue Impact', 'p5', 'PET Bottles represent 48% of risk. Stockout protection on this SKU is the top procurement mandate.')}</div>
+                        <div class="span-4">${renderRankingTable('6. Supplier Priority Ranking', [
+                            { n: 'Arancia', roi: '+2.45%', st: 'Preferred' },
+                            { n: 'Trio PET', roi: '+1.33%', st: 'Benchmark' },
+                            { n: 'Miami', roi: '-0.88%', st: 'Terminate' }
+                        ], ['Vendor', 'ROI Impact', 'Status'])}</div>
                     </div>
                 `;
-                renderScatter("#p1", simData.map(d => ({ x: d.rel, y: d.roi })), 'ROI %');
-                renderBar("#p2", simData.map(d => d.rej), 'Rej %');
-                renderScatter("#p3", simData.map(d => ({ x: d.obsolete, y: d.indirect })), 'Cost €');
-                renderLine("#p4", simData.map(d => d.rmCost), 'RM Index');
-                renderDonut("#p5", [48, 31, 12, 9], ['PET', 'Pack', 'Conc.', 'Other']);
+                renderChart("#p1", 'scatter', [{ name: 'ROI', data: simData.map(d => ({ x: d.rel, y: d.roi })) }], { xaxis: { type: 'numeric' } });
+                renderChart("#p2", 'bar', [{ name: 'Rej %', data: simData.map(d => d.rej) }]);
+                renderChart("#p3", 'scatter', [{ name: 'Indirect', data: simData.map(d => ({ x: d.obsolete, y: d.indirect })) }], { xaxis: { type: 'numeric' } });
+                renderChart("#p4", 'line', [{ name: 'RM Index', data: simData.map(d => d.rmCost) }]);
+                renderChart("#p5", 'donut', [48, 31, 12, 9], { labels: ['PET', 'Pack', 'Conc.', 'Other'] });
 
             } else if (tabId === 'sales') {
                 container.innerHTML = `
-                    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-                        ${renderChartTile('1. Shelf Life vs Revenue Shield', 's1', '↑1% shelf life gain = +€25k realized revenue. Blocked retailer penalties destroying R1 margins.')}
-                        ${renderChartTile('2. Service Level vs ROI Efficiency', 's2', 'The 98% Strategy: Every 1% gain = +0.5% ROI. R6 hit 98.2%, unlocking tiered contract bonuses.')}
-                        ${renderChartTile('3. Forecast Error (MAPE) vs COGS', 's3', 'Reduction Logic: Decreasing MAPE to 22.1% removed €140k in rush-order surcharges from structural COGS.')}
-                        ${renderChartTile('4. Product Availability (OSA) vs ROI', 's4', 'OSA reached 98.2% in R6. ensuring contracted sales were realized without backorder costs.')}
-                        ${renderChartTile('5. Customer ROI Weighting (Matrix)', 's5', 'Food & Groceries carries 49% of our ROI weighting. Service precision here is mission-critical.')}
-                        <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm h-full flex flex-col"><h4 class="text-slate-800 text-[11px] font-black uppercase mb-6 tracking-widest flex items-center gap-2 border-b pb-4"><i data-lucide="clipboard-list"></i> 6. Account Strategy</h4><table class="w-full text-left text-[11px] mt-4"><tr class="text-slate-400 font-black border-b"><th>Account</th><th>ROI Contrib</th><th>Tier</th></tr><tr class="border-b"><td class="py-4 font-bold">F&G</td><td class="text-emerald-600">+2.85%</td><td>Critical</td></tr><tr class="border-b"><td class="py-4 font-bold">Dominick's</td><td class="text-emerald-600">+1.15%</td><td>Strategic</td></tr><tr><td class="py-4 font-bold">LAND</td><td class="text-emerald-600">+0.54%</td><td>Volume</td></tr></table></div>
+                    <div class="grid-layout">
+                        <div class="span-4">${renderChartTile('1. Shelf Life vs Revenue Shield', 's1', '↑1% shelf life gain = +€25k realized revenue. Blocked retailer penalties destroying R1 margins.')}</div>
+                        <div class="span-4">${renderChartTile('2. Service Level vs ROI Efficiency', 's2', 'The 98% Strategy: Every 1% gain = +0.5% ROI. R6 hit bonus triggers.')}</div>
+                        <div class="span-4">${renderChartTile('3. Forecast Error (MAPE) vs COGS', 's3', 'Reduction Logic: Decreasing MAPE to 22.1% removed €140k in rush-order surcharges.')}</div>
+                        <div class="span-4">${renderChartTile('4. Product Availability (OSA)', 's4', 'OSA reached 98.2% in R6. Ensuring contracted sales were fully realized without backorders.')}</div>
+                        <div class="span-4">${renderChartTile('5. Customer ROI Weighting', 's5', 'Food & Groceries carries 49% ROI weighting. Service level precision here is mission-critical.')}</div>
+                        <div class="span-4">${renderRankingTable('6. Strategic Customer Tiers', [
+                            { c: 'Food & Groceries', rev: '€1.30M', roi: '+2.85%' },
+                            { c: "Dominick's", rev: '€0.71M', roi: '+1.15%' },
+                            { c: 'LAND Market', rev: '€0.62M', roi: '+0.54%' }
+                        ], ['Account', 'Revenue', 'ROI Impact'])}</div>
                     </div>
                 `;
-                renderBar("#s1", simData.map(d => d.shelf), 'Shelf %');
-                renderScatter("#s2", simData.map(d => ({ x: d.sl, y: d.roi })), 'ROI %');
-                renderLine("#s3", simData.map(d => d.error), 'MAPE %');
-                renderArea("#s4", simData.map(d => d.prodAvail), 'OSA %');
-                renderBar("#s5", [49, 27, 24], 'Weight', ['F&G', 'DOM', 'LAND']);
+                renderChart("#s1", 'bar', [{ name: 'Shelf %', data: simData.map(d => d.shelf) }]);
+                renderChart("#s2", 'scatter', [{ name: 'ROI', data: simData.map(d => ({ x: d.sl, y: d.roi })) }], { xaxis: { type: 'numeric' } });
+                renderChart("#s3", 'line', [{ name: 'MAPE', data: simData.map(d => d.error) }]);
+                renderChart("#s4", 'area', [{ name: 'OSA %', data: simData.map(d => d.prodAvail) }]);
+                renderChart("#s5", 'bar', [{ name: 'Weight', data: [49, 27, 24] }], { xaxis: { categories: ['F&G', 'DOM', 'LAND'] } });
 
             } else if (tabId === 'ops') {
                 container.innerHTML = `
-                    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-                        ${renderChartTile('1. Inbound Util vs COGS Stress', 'o1', 'R4 Overflow Crisis: 116.6% utilization triggered €29k in storage penalties. structural fix in R5 recovered flow.')}
-                        ${renderChartTile('2. Plan Adherence vs ROI', 'o2', 'Internal Driver: 10% adherence gain = +5% ROI. Reaching 93.6% ensured maximum fixed cost absorption.')}
-                        ${renderChartTile('3. Bottling Downtime vs COGS Impact', 'o3', 'Quantified Savings: ↓5% downtime = -$40k COGS reduction. Reducing 15h to 7.8h saved €60k+.')}
-                        ${renderChartTile('4. Breakdown vs Adherence Timeline', 'o4', 'Solve Breakdown projects in R5 successfully neutralized random failure, stabilizing throughput.')}
-                        ${renderChartTile('5. Outbound Util vs Indirect Overhead', 'o5', 'Efficiency Curve: Flow at 90.2% ensured maximum fixed cost absorption without triggering overtime.')}
-                        <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm h-full flex flex-col"><h4 class="text-slate-800 text-[11px] font-black uppercase mb-6 tracking-widest flex items-center gap-2 border-b pb-4"><i data-lucide="clipboard-list"></i> 6. Segment ROI Audit</h4><table class="w-full text-left text-[11px] mt-4"><tr class="text-slate-400 font-black border-b"><th>Operational Node</th><th>ROI Impact</th><th>Status</th></tr><tr class="border-b"><td class="py-4 font-bold">Bottling</td><td class="text-emerald-600">+1.22%</td><td>Maintain</td></tr><tr class="border-b"><td class="py-4 font-bold">Mixing</td><td class="text-emerald-600">+0.85%</td><td>Stable</td></tr><tr><td class="py-4 font-bold text-rose-600">WH Node</td><td class="text-rose-600">-0.38%</td><td>Corrected</td></tr></table></div>
+                    <div class="grid-layout">
+                        <div class="span-4">${renderChartTile('1. Inbound Util vs COGS Stress', 'o1', 'R4 Crisis: 116.6% utilization triggered €29k penalties. estructural expansion recovered flow.')}</div>
+                        <div class="span-4">${renderChartTile('2. Plan Adherence vs ROI', 'o2', 'Internal Driver: 10% adherence gain = +5% ROI. Reaching 93.6% ensured max cost absorption.')}</div>
+                        <div class="span-4">${renderChartTile('3. Bottling Downtime vs COGS', 'o3', 'Quantified Savings: ↓5% downtime = -$40k COGS. Reducing 15h to 7.8h saved structurally €60k+.')}</div>
+                        <div class="span-4">${renderChartTile('4. Breakdown vs Adherence', 'o4', 'Solve Breakdown projects in R5 successfully neutralized random failure, stabilizing throughput.')}</div>
+                        <div class="span-4">${renderChartTile('5. Outbound Flow vs Indirect', 'o5', 'Optimizing flow to 90.2% ensured maximum fixed cost absorption without triggering overtime.')}</div>
+                        <div class="span-4">${renderRankingTable('6. Segment ROI Performance', [
+                            { p: 'Bottling', roi: '+1.22%', st: 'Peak' },
+                            { p: 'Mixing', roi: '+0.85%', st: 'Stable' },
+                            { p: 'Warehouse', roi: '-0.38%', st: 'Fixed' }
+                        ], ['Segment', 'ROI Impact', 'Status'])}</div>
                     </div>
                 `;
-                renderBar("#o1", simData.map(d => d.inUtil), 'WH Util %');
-                renderScatter("#o2", simData.map(d => ({ x: d.adherence, y: d.roi })), 'ROI %');
-                renderBar("#o3", simData.map(d => d.downtime), 'Hrs');
-                renderLineMultiple("#o4", simData.map(d => d.downtime), simData.map(d => d.adherence), ['Breakdown', 'Adherence']);
-                renderScatter("#o5", simData.map(d => ({ x: d.outUtil, y: d.indirect })), 'Cost €');
+                renderChart("#o1", 'bar', [{ name: 'Util %', data: simData.map(d => d.inUtil) }]);
+                renderChart("#o2", 'scatter', [{ name: 'ROI', data: simData.map(d => ({ x: d.adherence, y: d.roi })) }], { xaxis: { type: 'numeric' } });
+                renderChart("#o3", 'bar', [{ name: 'Downtime', data: simData.map(d => d.downtime) }]);
+                renderChart("#o4", 'line', [
+                    { name: 'Downtime', data: simData.map(d => d.downtime) },
+                    { name: 'Adherence', data: simData.map(d => d.adherence) }
+                ]);
+                renderChart("#o5", 'scatter', [{ name: 'Cost', data: simData.map(d => ({ x: d.outUtil, y: d.indirect })) }], { xaxis: { type: 'numeric' } });
 
             } else if (tabId === 'scm') {
                 container.innerHTML = `
-                    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-                        ${renderChartTile('1. Component Avail. vs Revenue leakage', 'c1', 'Audit: R1 stockouts caused €210k leakage. R6Reached 100% availability, securing full potential.')}
-                        ${renderChartTile('2. Product OSA vs ROI Synergy', 'c2', 'Every 3% gain in On-Shelf Avail yielded +2% in net ROI through bonus contract triggers.')}
-                        ${renderChartTile('3. Stock Weeks vs Service level', 'c3', 'Efficiency Logic: R6 hit Lean Frontier: 98% service with 2.8 weeks of stock. Initial was 4.3.')}
-                        ${renderChartTile('4. Component ROI Priority (ABC)', 'c4', 'PET Bottles are A-Critical. Stockout risk directly caps production and realized revenue.')}
-                        <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm h-full flex flex-col"><h4 class="text-slate-800 text-[11px] font-black uppercase mb-6 tracking-widest flex items-center gap-2 border-b pb-4"><i data-lucide="clipboard-list"></i> 5. Product ROI Priority</h4><table class="w-full text-left text-[11px] mt-4"><tr class="text-slate-400 font-black border-b"><th>Product</th><th>Margin</th><th>ROI Rank</th></tr><tr class="border-b"><td class="py-4 font-bold">Orange 1L</td><td>High</td><td>Primary</td></tr><tr class="border-b"><td class="py-4 font-bold">Mango PET</td><td>Med</td><td>Secondary</td></tr><tr><td class="py-4 font-bold">C-Power</td><td>High</td><td>Niche</td></tr></table></div>
-                        <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm h-full flex flex-col"><h4 class="text-slate-800 text-[11px] font-black uppercase mb-6 tracking-widest flex items-center gap-2 border-b pb-4"><i data-lucide="clipboard-list"></i> 6. Inventory Risk Profile</h4><table class="w-full text-left text-[11px] mt-4"><tr class="text-slate-400 font-black border-b"><th>Category</th><th>Value</th><th>Risk</th></tr><tr class="border-b"><td class="py-4 font-bold">Finished</td><td>€280k</td><td>Low</td></tr><tr class="border-b"><td class="py-4 font-bold">Raw Mat</td><td>€140k</td><td>Medium</td></tr><tr><td class="py-4 font-bold">Packaging</td><td>€25k</td><td>Minimal</td></tr></table></div>
+                    <div class="grid-layout">
+                        <div class="span-4">${renderChartTile('1. Component Avail. vs Revenue', 'c1', 'Audit: R1 stockouts caused €210k leakage. R6Reached 100% availability, securing potential.')}</div>
+                        <div class="span-4">${renderChartTile('2. Product OSA vs ROI Sync', 'c2', 'Every 3% gain in On-Shelf Avail yielded +2% in net ROI through bonus contract triggers.')}</div>
+                        <div class="span-4">${renderChartTile('3. Stock Weeks vs Service', 'c3', 'Efficiency: R6 hit Lean Frontier: 98% service with only 2.8 weeks of stock. Initial was 4.3.')}</div>
+                        <div class="span-4">${renderChartTile('4. Component ROI Priority', 'c4', 'PET Bottles are A-Critical. Availability here is non-negotiable for mixing plant stability.')}</div>
+                        <div class="span-4">${renderRankingTable('5. SKU Priority Strategy', [
+                            { p: 'Orange 1L', m: 'High', r: 'Primary' },
+                            { p: 'Mango PET', m: 'Med', r: 'Secondary' },
+                            { p: 'C-Power', m: 'High', r: 'Niche' }
+                        ], ['Product', 'Margin', 'Rank'])}</div>
+                        <div class="span-4">${renderRankingTable('6. Inventory Risk Profile', [
+                            { i: 'Finished', v: '€280k', r: 'Low' },
+                            { i: 'Raw Mat', v: '€140k', r: 'Medium' },
+                            { i: 'Packaging', v: '€25k', r: 'Minimal' }
+                        ], ['Category', 'Value', 'Risk'])}</div>
                     </div>
                 `;
-                renderArea("#c1", simData.map(d => d.lostRev), 'Lost K€');
-                renderLine("#c2", simData.map(d => d.prodAvail), 'OSA Index');
-                renderScatter("#c3", simData.map(d => ({ x: d.stock, y: d.sl })), 'Service %');
-                renderBar("#c4", [100, 85, 40, 20], 'Priority', ['PET', 'Pack 1L', 'Conc.', 'Vit C']);
+                renderChart("#c1", 'area', [{ name: 'Lost K€', data: simData.map(d => d.lostRev) }]);
+                renderChart("#c2", 'line', [{ name: 'Avail', data: simData.map(d => d.prodAvail) }, { name: 'ROI', data: simData.map(d => d.roi) }]);
+                renderChart("#c3", 'scatter', [{ name: 'Service', data: simData.map(d => ({ x: d.stock, y: d.sl })) }], { xaxis: { type: 'numeric' } });
+                renderChart("#c4", 'bar', [{ name: 'Priority', data: [100, 85, 40, 20] }], { xaxis: { categories: ['PET', 'Pack', 'Conc.', 'Vit'] } });
 
             } else if (tabId === 'lab') {
                 container.innerHTML = `
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div class="bg-white border border-slate-200 p-12 rounded-[2.5rem] space-y-12 shadow-sm">
+                        <div class="bg-white border border-slate-200 p-12 rounded-[2.5rem] space-y-12 shadow-sm text-left">
+                            <h3 class="text-xs font-black text-orange-600 uppercase tracking-widest mb-6">Control Levers</h3>
                             <div class="space-y-6">
                                 <div class="flex justify-between items-center"><label class="text-xs font-black text-slate-700 uppercase tracking-widest">Supplier Reliability</label><span id="lab-rel-val" class="text-sm font-black text-orange-600">94%</span></div>
-                                <input type="range" id="lab-rel-slider" min="70" max="100" value="94" class="w-full" oninput="updateSimulation()">
+                                <input type="range" id="lab-rel-slider" min="70" max="100" value="94" oninput="updateSimulation()">
                             </div>
                             <div class="space-y-6">
                                 <div class="flex justify-between items-center"><label class="text-xs font-black text-slate-700 uppercase tracking-widest">Plan Adherence</label><span id="lab-adh-val" class="text-sm font-black text-orange-600">93%</span></div>
-                                <input type="range" id="lab-adh-slider" min="80" max="100" value="93" class="w-full" oninput="updateSimulation()">
+                                <input type="range" id="lab-adh-slider" min="80" max="100" value="93" oninput="updateSimulation()">
                             </div>
                             <div class="space-y-6">
                                 <div class="flex justify-between items-center"><label class="text-xs font-black text-slate-700 uppercase tracking-widest">Service Level</label><span id="lab-sl-val" class="text-sm font-black text-orange-600">98%</span></div>
-                                <input type="range" id="lab-sl-slider" min="90" max="100" value="98" class="w-full" oninput="updateSimulation()">
+                                <input type="range" id="lab-sl-slider" min="90" max="100" value="98" oninput="updateSimulation()">
                             </div>
                             <button onclick="resetLab()" class="w-full py-5 bg-slate-800 text-white text-xs font-black uppercase rounded-2xl transition-all flex items-center justify-center gap-3">
-                                <i data-lucide="refresh-ccw"></i> Revert to Round 6 Data
+                                <i data-lucide="refresh-ccw"></i> Revert to R6 Verified Data
                             </button>
                         </div>
                         <div class="lg:col-span-2 bg-gradient-to-br from-orange-500 to-amber-600 p-24 rounded-[3.5rem] flex flex-col justify-center items-center text-center shadow-2xl text-white relative overflow-hidden">
+                           <p class="text-sm font-black uppercase tracking-[0.5em] mb-8 opacity-70">Projected Simulation ROI</p>
                            <h3 id="lab-roi-val" class="text-[12rem] font-black tracking-tighter leading-none shadow-orange-900/20">4.54%</h3>
                            <div class="mt-12 flex items-center gap-10 py-6 px-16 bg-white/20 rounded-full text-3xl font-black border border-white/10 backdrop-blur-md">
                              <i data-lucide="arrow-right"></i> 
@@ -290,45 +321,25 @@
                     </div>
                 `;
             }
-
             lucide.createIcons();
         }
 
-        // --- CHART HELPERS ---
-        function renderKPITile(label, val, trend, icon) {
-            return `
-                <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm flex flex-col group hover:border-orange-500 transition-all">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="p-3 bg-orange-50 text-orange-600 rounded-xl group-hover:bg-orange-500 group-hover:text-white transition-all shadow-sm"><i data-lucide="${icon}"></i></div>
-                        <span class="text-xs font-black px-2 py-1 rounded-full bg-emerald-50 text-emerald-600">${trend}</span>
-                    </div>
-                    <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">${label}</p>
-                    <h3 class="text-4xl font-black text-slate-800 mt-3 tracking-tighter">${val}</h3>
-                </div>
-            `;
+        // --- HELPER RENDERERS ---
+        function renderKPITile(label, val, trend, icon, tCol) {
+            return `<div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm flex flex-col group hover:border-orange-500 transition-all text-left"><div class="flex justify-between items-start mb-6"><div class="p-3 bg-orange-50 text-orange-600 rounded-xl group-hover:bg-orange-500 group-hover:text-white transition-all shadow-sm"><i data-lucide="${icon}"></i></div><span class="text-xs font-black px-2 py-1 rounded-full bg-${tCol}-50 text-${tCol}-600">${trend}</span></div><p class="text-slate-500 text-[10px] font-black uppercase tracking-widest leading-none">${label}</p><h3 class="text-4xl font-black text-slate-800 mt-3 tracking-tighter">${val}</h3></div>`;
         }
 
         function renderChartTile(title, id, insight) {
-            return `<div class="chart-tile"><h4 class="text-slate-400 text-[10px] font-black uppercase mb-8 tracking-[0.2em] border-l-2 border-orange-500 pl-4">${title}</h4><div id="${id}"></div><div class="mt-4 p-4 bg-orange-50 border-l-4 border-orange-500 rounded-r-xl"><p class="text-[11px] text-orange-900 font-semibold italic">${insight}</p></div></div>`;
+            return `<div class="chart-tile text-left"><h4 class="text-slate-400 text-[10px] font-black uppercase mb-8 tracking-[0.2em] border-l-2 border-orange-500 pl-4">${title}</h4><div id="${id}" class="flex-1"></div><div class="mt-4 p-4 bg-orange-50 border-l-4 border-orange-500 rounded-r-xl"><p class="text-[11px] text-orange-900 font-semibold italic">${insight}</p></div></div>`;
         }
 
-        function renderScatter(el, data, name) {
-            new ApexCharts(document.querySelector(el), { ...commonOptions, chart: { height: 200, type: 'scatter' }, series: [{ name, data: data }], xaxis: { type: 'numeric' } }).render();
+        function renderRankingTable(title, data, headers) {
+            let rows = data.map(row => `<tr class="border-b border-slate-50 hover:bg-orange-50 transition-colors group">${Object.values(row).map((v, i) => `<td class="py-4 px-2 ${i === 0 ? 'font-bold' : ''}">${v}</td>`).join('')}</tr>`).join('');
+            return `<div class="chart-tile text-left"><h4 class="text-slate-800 text-[11px] font-black uppercase mb-6 tracking-widest flex items-center gap-2 border-b pb-4"><i data-lucide="clipboard-list"></i> ${title}</h4><table class="w-full text-left text-[11px] mt-4"><tr class="text-slate-400 font-black border-b">${headers.map(h => `<th class="pb-4 px-2">${h}</th>`).join('')}</tr>${rows}</table></div>`;
         }
-        function renderBar(el, data, name, cats) {
-            new ApexCharts(document.querySelector(el), { ...commonOptions, chart: { height: 200, type: 'bar' }, series: [{ name, data }], xaxis: { categories: cats || simData.map(d => "R"+d.round) } }).render();
-        }
-        function renderLine(el, data, name) {
-            new ApexCharts(document.querySelector(el), { ...commonOptions, chart: { height: 200, type: 'line' }, series: [{ name, data }], xaxis: { categories: simData.map(d => "R"+d.round) } }).render();
-        }
-        function renderArea(el, data, name) {
-            new ApexCharts(document.querySelector(el), { ...commonOptions, chart: { height: 200, type: 'area' }, series: [{ name, data }], xaxis: { categories: simData.map(d => "R"+d.round) } }).render();
-        }
-        function renderDonut(el, data, labels) {
-            new ApexCharts(document.querySelector(el), { ...commonOptions, chart: { height: 220, type: 'donut' }, series: data, labels: labels }).render();
-        }
-        function renderLineMultiple(el, d1, d2, names) {
-            new ApexCharts(document.querySelector(el), { ...commonOptions, chart: { height: 200, type: 'line' }, series: [{ name: names[0], data: d1 }, { name: names[1], data: d2 }], xaxis: { categories: simData.map(d => "R"+d.round) } }).render();
+
+        function renderChart(el, type, series, extra = {}) {
+            new ApexCharts(document.querySelector(el), { ...commonOptions, ...extra, chart: { ...commonOptions.chart, type, height: 200 }, series: series, xaxis: { categories: extra.xaxis?.categories || simData.map(d => "R"+d.round), ...extra.xaxis } }).render();
         }
 
         function updateSimulation() {
@@ -354,9 +365,7 @@
             updateSimulation();
         }
 
-        window.onload = () => {
-            switchTab('overview');
-        };
+        window.onload = () => { switchTab('overview'); };
     </script>
 </body>
 </html>
